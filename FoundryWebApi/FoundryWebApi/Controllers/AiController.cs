@@ -23,7 +23,7 @@ namespace WebApi.Controllers
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            var ProjectEndpoint = _config["Foundry:ProjectEndpoint"] ?? "";
+            var ProjectEndpoint = _config["Foundry-Project-01:Endpoint"] ?? "";
 
             AIProjectClient projectClient = new(
                 endpoint: new Uri(ProjectEndpoint),
