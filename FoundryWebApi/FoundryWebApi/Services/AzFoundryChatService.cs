@@ -2,6 +2,7 @@
 using Azure.Identity;
 using OpenAI.Responses;
 using System.ClientModel;
+using System.Threading;
 using WebApi.Models;
 
 #pragma warning disable OPENAI001 // pour using OpenAI.Responses;
@@ -29,16 +30,27 @@ namespace WebApi.Services
 
         }
 
-        public async Task<PromptResponse> GetResponseAsync(PromptRequest request)
+        public async Task<PromptResponse> GetResponseAsync(PromptRequest request, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Sending prompt to Azure AI Foundry");
+
+            var systemPrompt = _config["Foundry-Project-01:SystemPrompt"] ?? string.Empty;
+
+            var options = new CreateResponseOptions
+            {
+                Instructions = systemPrompt
+            };
+
+            options.InputItems.Add(
+                ResponseItem.CreateUserMessageItem(request.TextRequest));
 
             var client = _projectClient
                 .ProjectOpenAIClient
                 .GetProjectResponsesClientForModel(_modelName);
 
+
             ClientResult<ResponseResult> result = await client.CreateResponseAsync(
-                request.TextRequest);
+                options, cancellationToken);
 
             var response = result.Value.GetOutputText();
 

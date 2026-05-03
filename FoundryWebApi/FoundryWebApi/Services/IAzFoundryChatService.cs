@@ -4,6 +4,6 @@ namespace WebApi.Services
 {
     public interface IAzFoundryChatService
     {
-        Task<PromptResponse> GetResponseAsync(PromptRequest request);
+        Task<PromptResponse> GetResponseAsync(PromptRequest request, CancellationToken cancellationToken = default);
     }
 }
