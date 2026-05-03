@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using Azure.Identity;
+﻿using Azure.AI.Extensions.OpenAI;
 using Azure.AI.Projects;
-using Azure.AI.Extensions.OpenAI;
+using Azure.Identity;
+using Microsoft.AspNetCore.Mvc;
 using OpenAI.Responses;
+using WebApi.Models;
 using WebApi.Services;
 
 
@@ -26,12 +26,28 @@ namespace WebApi.Controllers
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            var response = await _azFoundryService.GetResponseAsync(new WebApi.Models.PromptRequest
+            try
             {
-                Text = "What is the size of France in square miles?"
-            });
+                var response = await _azFoundryService.GetResponseAsync(
+                    new PromptRequest
+                    {
+                        Text = "What is the size of France in square miles?"
+                    });
 
-            return Ok(response.Text);
+                return Ok(response.Text);
+            }
+            catch (TimeoutException)
+            {
+                return StatusCode(504, "AI service timeout");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(401, "Unauthorized to access AI service");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
 
         }
     }
