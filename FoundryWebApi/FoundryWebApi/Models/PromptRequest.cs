@@ -2,6 +2,6 @@
 {
     public class PromptRequest
     {
-        public string? Text { get; set; }
+        public string? TextRequest { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace WebApi.Services
 {
-    public interface IAzFoundryService
+    public interface IAzFoundryChatService
     {
         Task<PromptResponse> GetResponseAsync(PromptRequest request);
     }

@@ -1,5 +1,4 @@
-﻿using Azure.AI.Extensions.OpenAI;
-using Azure.AI.Projects;
+﻿using Azure.AI.Projects;
 using Azure.Identity;
 using OpenAI.Responses;
 using System.ClientModel;
@@ -9,30 +8,24 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public class AzFoundryService : IAzFoundryService
+    public class AzFoundryChatService : IAzFoundryChatService
     {
         private readonly IConfiguration _config;
         private readonly AIProjectClient _projectClient;
         private readonly string? _modelName;
-        private readonly ILogger<AzFoundryService> _logger;
+        private readonly ILogger<AzFoundryChatService> _logger;
 
-        public AzFoundryService(
+        public AzFoundryChatService(
             IConfiguration config, 
-            ILogger<AzFoundryService> logger)
+            AIProjectClient projectClient,
+            ILogger<AzFoundryChatService> logger)
         {
             _config = config;
+            _projectClient = projectClient;
             _logger = logger;
 
             _modelName = _config["Foundry-Project-01:ModelName"]
                 ?? throw new InvalidOperationException("ModelName not configured");
-
-            var endpoint = _config["Foundry-Project-01:Endpoint"]
-                ?? throw new InvalidOperationException("Endpoint not configured");
-
-            _projectClient = new AIProjectClient(
-                endpoint: new Uri(endpoint),
-                tokenProvider: new DefaultAzureCredential()
-             );
 
         }
 
@@ -45,7 +38,7 @@ namespace WebApi.Services
                 .GetProjectResponsesClientForModel(_modelName);
 
             ClientResult<ResponseResult> result = await client.CreateResponseAsync(
-                request.Text);
+                request.TextRequest);
 
             var response = result.Value.GetOutputText();
 

@@ -1,8 +1,4 @@
-﻿using Azure.AI.Extensions.OpenAI;
-using Azure.AI.Projects;
-using Azure.Identity;
-using Microsoft.AspNetCore.Mvc;
-using OpenAI.Responses;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 using WebApi.Services;
 
@@ -14,24 +10,34 @@ namespace WebApi.Controllers
     public class AiController : ControllerBase
     {
         private readonly IConfiguration _config; 
-        private readonly IAzFoundryService _azFoundryService;
+        private readonly IAzFoundryChatService _azFoundryChatService;
 
-        public AiController(IConfiguration config, IAzFoundryService azFoundryService)
+        public AiController(IConfiguration config, IAzFoundryChatService azFoundryService)
         {
             _config = config;
-            _azFoundryService = azFoundryService;
+            _azFoundryChatService = azFoundryService;
         }
 
+        [HttpPost("prompt")]
+        public async Task<IActionResult> Prompt([FromBody] PromptRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.TextRequest))
+            {
+                return BadRequest("Prompt text cannot be empty.");
+            }
+            var response = await _azFoundryChatService.GetResponseAsync(request);
+            return Ok(response);
+        }
 
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
             try
             {
-                var response = await _azFoundryService.GetResponseAsync(
+                var response = await _azFoundryChatService.GetResponseAsync(
                     new PromptRequest
                     {
-                        Text = "What is the size of France in square miles?"
+                        TextRequest = "What is the size of France in square miles?"
                     });
 
                 return Ok(response.Text);
