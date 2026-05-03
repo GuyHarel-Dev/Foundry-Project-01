@@ -4,8 +4,8 @@ using Azure.Identity;
 using Azure.AI.Projects;
 using Azure.AI.Extensions.OpenAI;
 using OpenAI.Responses;
+using WebApi.Services;
 
-#pragma warning disable OPENAI001 // pour using OpenAI.Responses;
 
 namespace WebApi.Controllers
 {
@@ -14,26 +14,25 @@ namespace WebApi.Controllers
     public class AiController : ControllerBase
     {
         private readonly IConfiguration _config; 
+        private readonly IAzFoundryService _azFoundryService;
 
-        public AiController(IConfiguration config)
+        public AiController(IConfiguration config, IAzFoundryService azFoundryService)
         {
             _config = config;
+            _azFoundryService = azFoundryService;
         }
+
 
         [HttpGet("test")]
         public async Task<IActionResult> Test()
         {
-            var ProjectEndpoint = _config["Foundry-Project-01:Endpoint"] ?? "";
+            var response = await _azFoundryService.GetResponseAsync(new WebApi.Models.PromptRequest
+            {
+                Text = "What is the size of France in square miles?"
+            });
 
-            AIProjectClient projectClient = new(
-                endpoint: new Uri(ProjectEndpoint),
-                tokenProvider: new DefaultAzureCredential());
+            return Ok(response.Text);
 
-            ProjectResponsesClient responseClient = projectClient.ProjectOpenAIClient.GetProjectResponsesClientForModel("gpt-4.1-mini"); // supports all Foundry direct models
-            ResponseResult response = await responseClient.CreateResponseAsync(
-                "What is the size of France in square miles?");
-
-            return Ok(response.GetOutputText());
         }
     }
 }

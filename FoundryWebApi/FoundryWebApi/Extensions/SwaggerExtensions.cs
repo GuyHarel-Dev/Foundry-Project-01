@@ -1,8 +1,8 @@
 ﻿using Microsoft.OpenApi;
 
-namespace ProjectExtensions
+namespace WebApi.Extensions
 {
-    public static class PrivateSwaggerExtensions
+    public static class SwaggerExtensions
     {
 
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)        {
@@ -10,13 +10,13 @@ namespace ProjectExtensions
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "FP01 AI API",
+                    Title = "FoundryWebApi",
                     Version = "v1",
                     Description = "API de démonstration IA : génération de texte, résumé et classification.",
                     Contact = new OpenApiContact
                     {
-                        Name = "Ton Nom",
-                        Email = "ton@email.com"
+                        Name = "Guy Harel",
+                        Email = "guyharel-dev@gmail.com"
                     }
                 });
             });

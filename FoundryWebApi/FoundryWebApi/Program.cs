@@ -1,4 +1,4 @@
-using ProjectExtensions;
+using WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerDocumentation();
-
-//builder.Services.AddOpenAIClient();
+builder.Services.AddAiServices();
 
 var app = builder.Build();
 
